@@ -5,7 +5,6 @@ from docx.oxml.shared import qn, OxmlElement
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 import re
 import tempfile
-import os
 
 st.set_page_config(page_title="Transcript Formatter", layout="centered")
 st.title("📄 Coaching Transcript Formatter")
@@ -18,31 +17,43 @@ def add_page_number_field(paragraph):
 
     # PAGE field
     run_page = paragraph.add_run()
-    for fldType, fldText in [("begin", "PAGE"), ("separate", "1"), ("end", "")]:
-        fld = OxmlElement('w:fldChar')
-        fld.set(qn('w:fldCharType'), fldType)
-        run_page._r.append(fld if fldType != "separate" else OxmlElement('w:t'))
-        if fldType == "separate":
-            run_page._r[-1].text = fldText
-        elif fldType == "begin":
-            instr = OxmlElement("w:instrText")
-            instr.text = fldText
-            run_page._r.append(instr)
+    fld_char1 = OxmlElement('w:fldChar')
+    fld_char1.set(qn('w:fldCharType'), 'begin')
+
+    instr_text = OxmlElement('w:instrText')
+    instr_text.text = "PAGE"
+
+    fld_char2 = OxmlElement('w:fldChar')
+    fld_char2.set(qn('w:fldCharType'), 'separate')
+
+    fld_text = OxmlElement('w:t')
+    fld_text.text = "1"
+
+    fld_char3 = OxmlElement('w:fldChar')
+    fld_char3.set(qn('w:fldCharType'), 'end')
+
+    run_page._r.extend([fld_char1, instr_text, fld_char2, fld_text, fld_char3])
 
     paragraph.add_run(" of ")
 
     # NUMPAGES field
     run_total = paragraph.add_run()
-    for fldType, fldText in [("begin", "NUMPAGES"), ("separate", "1"), ("end", "")]:
-        fld = OxmlElement('w:fldChar')
-        fld.set(qn('w:fldCharType'), fldType)
-        run_total._r.append(fld if fldType != "separate" else OxmlElement('w:t'))
-        if fldType == "separate":
-            run_total._r[-1].text = fldText
-        elif fldType == "begin":
-            instr = OxmlElement("w:instrText")
-            instr.text = fldText
-            run_total._r.append(instr)
+    fld_char1 = OxmlElement('w:fldChar')
+    fld_char1.set(qn('w:fldCharType'), 'begin')
+
+    instr_text = OxmlElement('w:instrText')
+    instr_text.text = "NUMPAGES"
+
+    fld_char2 = OxmlElement('w:fldChar')
+    fld_char2.set(qn('w:fldCharType'), 'separate')
+
+    fld_text = OxmlElement('w:t')
+    fld_text.text = "1"
+
+    fld_char3 = OxmlElement('w:fldChar')
+    fld_char3.set(qn('w:fldCharType'), 'end')
+
+    run_total._r.extend([fld_char1, instr_text, fld_char2, fld_text, fld_char3])
 
 if uploaded_file:
     content = uploaded_file.read().decode("utf-8")
